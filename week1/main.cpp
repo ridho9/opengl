@@ -2,6 +2,9 @@
 #include <GLFW/glfw3.h>
 #include <stdio.h>
 
+#define WINDOW_WIDTH 600
+#define WINDOW_HEIGHT 600
+
 // Function to listen and handle keypress
 void processInput(GLFWwindow *window)
 {
@@ -19,7 +22,7 @@ int main(void)
         return -1;
 
     /* Create a windowed mode window and its OpenGL context */
-    window = glfwCreateWindow(800, 600, "set_float", NULL, NULL);
+    window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "set_float", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
@@ -30,7 +33,7 @@ int main(void)
     glfwMakeContextCurrent(window);
 
     // Set viewport
-    glViewport(0, 0, 800, 600);
+    glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 
     // Background color
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -42,15 +45,21 @@ int main(void)
         /* Render here */
         //clear color and depth buffer
         glClear(GL_COLOR_BUFFER_BIT);
+
         // set draw color
         glColor3f(0.0f, 1.0f, 0.0f);
 
-        glBegin(GL_POLYGON);         //starts drawing of points
-        glVertex3f(0.0, 0.6f, 0.0f); // x, y, z
-        glVertex3f(0.5, 0.1f, 0.0f);
-        glVertex3f(0.3, -0.5f, 0.0f);
-        glVertex3f(-0.3, -0.5f, 0.0f);
-        glVertex3f(-0.5, 0.1f, 0.0f);
+        glBegin(GL_TRIANGLES); //starts drawing of points
+        glVertex2f(0.0, 0.6f); // x, y, z
+        glVertex2f(0.5, 0.1f);
+        glVertex2f(0.3, -0.5f);
+        glEnd(); //end drawing of points
+
+        glColor3f(1.0f, 1.0f, 0.0f);
+        glBegin(GL_TRIANGLES); //starts drawing of points
+        glVertex2f(-0.3, -0.5f);
+        glVertex2f(-0.5, 0.1f);
+        glVertex2f(-0.8, 0.1f);
         glEnd(); //end drawing of points
 
         /* Swap front and back buffers */
