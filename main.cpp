@@ -1,5 +1,5 @@
-// #include <glad/glad.h>
-#include <GL/glew.h>
+#include <glad/glad.h>
+// #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <stdio.h>
 
@@ -64,8 +64,8 @@ int main(void)
     /* Make the window's context current */
     glfwMakeContextCurrent(window);
 
-    // if (!gladLoadGL())
-    if (glewInit() != GLEW_OK)
+    if (!gladLoadGL())
+    // if (glewInit() != GLEW_OK)
     {
         printf("Failed to initialize\n");
         return -1;
