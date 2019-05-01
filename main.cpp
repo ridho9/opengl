@@ -27,14 +27,14 @@ void mouse_callback(GLFWwindow *window, double xpos, double ypos);
 void drawWheel(Shader &shader, glm::mat4 wheelOffset);
 
 float zoom = 45.0f;
-glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 5.0f);
-glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+glm::vec3 cameraPos = glm::vec3(3.0f, 0.0f, 5.0f);
+glm::vec3 cameraFront = glm::vec3(-0.5f, -0.1f, -1.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
 glm::vec3 lightPos(50.2f, 50.0f, 50.0f);
 
 float ambientStrength = 0.4;
-float scale = 0.04;
+float scale = 0.035;
 
 int main(void)
 {
@@ -231,6 +231,12 @@ void processInput(GLFWwindow *window)
         cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+
+    if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+        cameraPos -= cameraSpeed * glm::vec3(0.0f, 1.0f, 0.0f);
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+        cameraPos += cameraSpeed * glm::vec3(0.0f, 1.0f, 0.0f);
+
     if (glfwGetKey(window, GLFW_KEY_MINUS) == GLFW_PRESS)
     {
         ambientStrength -= 0.05;

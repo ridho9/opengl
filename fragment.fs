@@ -38,6 +38,12 @@ void main()
     convTexCoord.x = TexCoord.x / 240;
     convTexCoord.y = 1 - (TexCoord.y / 340);
 
-    vec3 result = (ambient +  diffuse) * vec3(texture(ourTexture, convTexCoord));
+    vec3 textureColor = vec3(texture(ourTexture, convTexCoord));
+    vec3 result = (ambient +  diffuse) * textureColor;
     outColor = vec4(result, 1);
+
+    if(textureColor.x == 1.0 && textureColor.y == 0 && textureColor.z == 1.0) {
+        outColor = vec4(result, 0);
+    }
+
 }
