@@ -109,6 +109,7 @@ int main(void)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     int width, height, nrChannels;
+    stbi_set_flip_vertically_on_load(true);
     unsigned char *data = stbi_load("texture.png", &width, &height, &nrChannels, 0);
     if (data)
     {
@@ -192,11 +193,10 @@ void processInput(GLFWwindow *window)
         cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
     if (glfwGetKey(window, GLFW_KEY_MINUS) == GLFW_PRESS)
     {
-        scale -= 0.1;
-        printf("%f\n", scale);
+        ambientStrength -= 0.05;
     }
     if (glfwGetKey(window, GLFW_KEY_EQUAL) == GLFW_PRESS)
-        scale += 0.05;
+        ambientStrength += 0.05;
 }
 
 void scroll_callback(GLFWwindow *window, double xoffset, double yoffset)
