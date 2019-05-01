@@ -29,6 +29,8 @@ glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 5.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
+float ambientStrength = 0.9;
+
 int main(void)
 {
     /* Initialize the library */
@@ -129,6 +131,8 @@ int main(void)
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        shader.use();
+
         // view, set camera pos here
         glm::mat4 view;
         view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
@@ -138,11 +142,12 @@ int main(void)
         glm::mat4 projection = glm::perspective(glm::radians(zoom), 1.0f * WINDOW_WIDTH / WINDOW_HEIGHT, 0.1f, 100.0f);
         shader.setMat4("projection", projection);
 
+        shader.setFloat("ambientStrength", ambientStrength);
+
         // bind texture
         glBindTexture(GL_TEXTURE_2D, texture);
 
         // render
-        shader.use();
         glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLES, 0, 36);
 
@@ -173,6 +178,10 @@ void processInput(GLFWwindow *window)
         cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+    if (glfwGetKey(window, GLFW_KEY_MINUS))
+        ambientStrength -= 0.05;
+    if (glfwGetKey(window, GLFW_KEY_EQUAL))
+        ambientStrength += 0.05;
 }
 
 void scroll_callback(GLFWwindow *window, double xoffset, double yoffset)
