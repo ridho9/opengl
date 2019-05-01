@@ -1,87 +1,146 @@
-float vertices[] = {
-    //m
-    0, 0, -140, 80, 0, 10,     //1
-    40, 0, -140, 120, 0, 10,   //2
-    0, 80, -140, 80, 80, 10,   //3
-    40, 80, -140, 120, 80, 10, //4
+#ifndef CAMERA_H
+#define CAMERA_H
 
-    //l
-    0, 80, -140, 80, 80, 4,   //1
-    40, 80, -140, 120, 80, 4, //2
-    0, 80, -40, 80, 180, 4,   //3
-    40, 80, -40, 120, 180, 4, //4
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+#include <stdio.h>
 
-    //k
-    0, 0, -140, 0, 80, 2,   //1
-    0, 80, -140, 80, 80, 2, //2
-    0, 0, -40, 0, 180, 2,   //3
-    0, 80, -40, 80, 180, 2, //4
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
-    //h
-    40, 80, -140, 120, 80, 0, //1
-    40, 0, -140, 200, 80, 0,  //2
-    40, 80, -40, 120, 180, 0, //3
-    40, 0, -40, 200, 180, 0,  //4
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
 
-    //j
-    40, 0, -140, 200, 80, 6, //1
-    0, 0, -140, 240, 80, 6,  //2
-    40, 0, -40, 200, 180, 6, //3
-    0, 0, -40, 240, 180, 6,  //4
+#include "const.h"
+#include "shader.h"
+#include "vertices.h"
 
-    //g
-    0, 80, -40, 80, 180, 8,   //1
-    40, 80, -40, 120, 180, 8, //2
-    0, 40, -40, 80, 220, 8,   //3
-    40, 40, -40, 120, 220, 8, //4
+class Car
+{
+  public:
+    GLuint VBO, VAO, texture;
+    Shader shader;
 
-    //b
-    0, 40, -40, 80, 220, 4,   //1
-    40, 40, -40, 120, 220, 4, //2
-    0, 40, 0, 80, 260, 4,     //3
-    40, 40, 0, 120, 260, 4,   //4
+    Car() : shader("vertex.vs", "fragment.fs")
+    {
+        // Set Up VBO
+        glGenVertexArrays(1, &VAO);
+        glBindVertexArray(VAO);
 
-    //a
-    0, 40, 0, 80, 260, 8,   //1
-    40, 40, 0, 120, 260, 8, //2
-    0, 0, 0, 80, 300, 8,    //3
-    40, 0, 0, 120, 300, 8,  //4
+        // Set up VBO
+        glGenBuffers(1, &VBO);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    //d
-    0, 0, 0, 80, 300, 6,     //1
-    40, 0, 0, 120, 300, 6,   //2
-    0, 0, -40, 80, 340, 6,   //3
-    40, 0, -40, 120, 340, 6, //4
+        // Set up vertex attrib array
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE,
+                              6 * sizeof(float), 0);
 
-    //f
-    0, 40, -40, 40, 260, 2, //1
-    0, 40, 0, 80, 260, 2,   //2
-    0, 0, -40, 40, 300, 2,  //3
-    0, 0, 0, 80, 300, 2,    //4
+        glEnableVertexAttribArray(2);
+        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE,
+                              6 * sizeof(float), (void *)(3 * sizeof(float)));
 
-    //c
-    40, 40, 0, 120, 260, 0,   //1
-    40, 40, -40, 160, 260, 0, //2
-    40, 0, 0, 120, 300, 0,    //3
-    40, 0, -40, 160, 300, 0,  //4
+        glEnableVertexAttribArray(3);
+        glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE,
+                              6 * sizeof(float), (void *)(5 * sizeof(float)));
 
-    // wheel
-    // a
-    0, 0, 0, 200, 340, 2,   // 1
-    0, 40, 0, 200, 300, 2,  //
-    0, 0, 40, 240, 340, 2,  //
-    0, 40, 40, 240, 300, 2, //
+        // Set up textures
+        glGenTextures(1, &texture);
+        glBindTexture(GL_TEXTURE_2D, texture);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        int width, height, nrChannels;
+        stbi_set_flip_vertically_on_load(true);
+        unsigned char *data = stbi_load("b8ojml.jpg", &width, &height, &nrChannels, 0);
+        if (data)
+        {
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+            glGenerateMipmap(GL_TEXTURE_2D);
+        }
+        else
+        {
+            printf("Failed to load texture\n");
+        }
+        stbi_image_free(data);
 
-    // tb
-    0, 40, 0, 200, 300, 4,   //
-    10, 40, 0, 200, 290, 4,  //
-    0, 40, 40, 240, 300, 4,  //
-    10, 40, 40, 240, 290, 4, //
+        // set transform
+        shader.use();
+        shader.setVec3("lightPos", lightPos);
+    }
 
-    //fb
-    0, 0, 40, 240, 300, 8,   //
-    0, 40, 40, 200, 300, 8,  //
-    10, 0, 40, 240, 290, 8,  //
-    10, 40, 40, 200, 290, 8, //
+    void draw()
+    {
+        shader.use();
 
+        // model, set object scale pos rot here
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::scale(model, glm::vec3(scale, scale, scale));
+        model = glm::translate(model, glm::vec3(-40.0f, -40.0f, 0.0f));
+        shader.setMat4("model", model);
+
+        // view, set camera pos here
+        glm::mat4 view;
+        view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+        shader.setMat4("view", view);
+
+        // projection, set camera projection here
+        glm::mat4 projection = glm::perspective(glm::radians(zoom), 1.0f * WINDOW_WIDTH / WINDOW_HEIGHT, 0.1f, 1000.0f);
+        shader.setMat4("projection", projection);
+
+        shader.setFloat("ambientStrength", ambientStrength);
+
+        // bind texture
+        glBindTexture(GL_TEXTURE_2D, texture);
+
+        // render
+        glBindVertexArray(VAO);
+
+        // draw body
+        for (int i = 0; i < 11; i++)
+        {
+            glDrawArrays(GL_TRIANGLE_STRIP, 4 * i, 4);
+        }
+
+        model = glm::translate(model, glm::vec3(40.0f, -20.0f, -50.0f));
+        drawWheel(model);
+        model = glm::translate(model, glm::vec3(0.0f, 0.0f, -70.0f));
+        drawWheel(model);
+        model = glm::translate(model, glm::vec3(-50.0f, 0.0f, 0.0f));
+        drawWheel(model);
+        model = glm::translate(model, glm::vec3(0.0f, 0.0f, 70.0f));
+        drawWheel(model);
+    }
+
+  private:
+    void drawWheel(glm::mat4 wheelOffset)
+    {
+        // draw wheel
+        glm::mat4 model;
+        model = wheelOffset;
+        shader.setMat4("model", model);
+        glDrawArrays(GL_TRIANGLE_STRIP, 4 * 11, 4);
+        model = glm::translate(wheelOffset, glm::vec3(10.0f, 0.0f, 0.0f));
+        shader.setMat4("model", model);
+        glDrawArrays(GL_TRIANGLE_STRIP, 4 * 11, 4);
+        //tb
+        model = glm::translate(wheelOffset, glm::vec3(0.0f, 0.0f, 0.0f));
+        shader.setMat4("model", model);
+        glDrawArrays(GL_TRIANGLE_STRIP, 4 * 12, 4);
+        model = glm::translate(wheelOffset, glm::vec3(0.0f, -40.0f, 0.0f));
+        shader.setMat4("model", model);
+        glDrawArrays(GL_TRIANGLE_STRIP, 4 * 12, 4);
+        //fb
+        model = glm::translate(wheelOffset, glm::vec3(0.0f, 0.0f, 0.0f));
+        shader.setMat4("model", model);
+        glDrawArrays(GL_TRIANGLE_STRIP, 4 * 13, 4);
+        model = glm::translate(wheelOffset, glm::vec3(0.0f, 0.0f, -40.0f));
+        shader.setMat4("model", model);
+        glDrawArrays(GL_TRIANGLE_STRIP, 4 * 13, 4);
+    }
 };
+
+#endif
