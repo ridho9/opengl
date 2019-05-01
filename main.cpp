@@ -31,7 +31,7 @@ glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
 float ambientStrength = 0.9;
-float scale = 0.1;
+float scale = 0.04;
 
 int main(void)
 {
@@ -138,6 +138,7 @@ int main(void)
         // model, set object scale pos rot here
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::scale(model, glm::vec3(scale, scale, scale));
+        model = glm::translate(model, glm::vec3(-30.0f, -40.0f, 0.0f));
         shader.setMat4("model", model);
 
         // view, set camera pos here
@@ -157,7 +158,7 @@ int main(void)
         // render
         glBindVertexArray(VAO);
 
-        for (int i = 0; i < 2; i++)
+        for (int i = 0; i < 11; i++)
         {
             glDrawArrays(GL_TRIANGLE_STRIP, 4 * i, 4);
         }
