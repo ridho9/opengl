@@ -5,12 +5,11 @@ layout (location=1) in vec3 color;
 layout (location=2) in vec2 texCoord;
 
 out vec3 Color;
-out vec2 outTexCoord;
+out vec2 TexCoord;
 
 void main()
 {
     gl_Position = vec4(position, 1.0);
-    // Color = color;
-    Color = vec3(1.0, 1.0, 1.0);
-    outTexCoord = texCoord;
+    Color = color;
+    TexCoord = texCoord;
 }
