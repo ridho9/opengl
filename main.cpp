@@ -1,4 +1,5 @@
-#include <glad/glad.h>
+// #include <glad/glad.h>
+#include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <stdio.h>
 
@@ -63,26 +64,22 @@ int main(void)
     /* Make the window's context current */
     glfwMakeContextCurrent(window);
 
-    if (!gladLoadGL())
+    // if (!gladLoadGL())
+    if (glewInit() != GLEW_OK)
     {
-        printf("Failed to initialize GLAD\n");
+        printf("Failed to initialize\n");
         return -1;
     }
-
-    // Set viewport
-    glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 
     GLuint VAO;
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
-    printf("VAO %x\n", glGetError());
 
     // Set up VBO
     GLuint VBO = 0;
     glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    printf("VBO %x\n", glGetError());
 
     GLuint vertexShader = createShader("vertex", GL_VERTEX_SHADER, vertexSource);
     GLuint fragmentShader = createShader("fragment", GL_FRAGMENT_SHADER, fragmentSource);
@@ -91,16 +88,16 @@ int main(void)
     GLuint shaderProgram = glCreateProgram();
     glAttachShader(shaderProgram, vertexShader);
     glAttachShader(shaderProgram, fragmentShader);
-    printf("sp %x\n", glGetError());
 
     // Bind fragment shader buffer
     glBindFragDataLocation(shaderProgram, 0, "outColor");
-    printf("bind f %x\n", glGetError());
     glLinkProgram(shaderProgram);
-    printf("link %x\n", glGetError());
+    glUseProgram(shaderProgram);
+
+    glDeleteShader(fragmentShader);
+    glDeleteShader(vertexShader);
 
     GLint posAttrib = glGetAttribLocation(shaderProgram, "position");
-    printf("getal %x\n", glGetError());
     glEnableVertexAttribArray(posAttrib);
     glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE,
                           5 * sizeof(float), 0);
@@ -109,6 +106,9 @@ int main(void)
     glEnableVertexAttribArray(colAttrib);
     glVertexAttribPointer(colAttrib, 3, GL_FLOAT, GL_FALSE,
                           5 * sizeof(float), (void *)(2 * sizeof(float)));
+
+    // Set viewport
+    glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
@@ -131,11 +131,7 @@ int main(void)
     }
 
     glDeleteProgram(shaderProgram);
-    glDeleteShader(fragmentShader);
-    glDeleteShader(vertexShader);
-
     glDeleteBuffers(1, &VBO);
-
     glDeleteVertexArrays(1, &VAO);
 
     glfwTerminate();
