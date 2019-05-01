@@ -1,45 +1,20 @@
 #include <glad/glad.h>
-// #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <stdio.h>
+
+#include "shader.h"
 
 #define WINDOW_WIDTH 700
 #define WINDOW_HEIGHT 700
 
 GLfloat vertices[] = {
-    0.0f, 0.5f, 1.0f, 0.0f, 0.0f,  // Vertex 1: Red
-    0.5f, -0.5f, 0.0f, 1.0f, 0.0f, // Vertex 2: Green
-    -0.5f, -0.5f, 0.0f, 0.0f, 1.0f // Vertex 3: Blue
+    0.0f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f,   // Vertex 1: Red
+    0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,  // Vertex 2: Green
+    -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, // Vertex 3: Blue
 };
 
 GLint status;
 char buffer[512];
-
-const GLchar *vertexSource = R"glsl(
-    #version 130
-    in vec2 position;
-    in vec3 color;
-
-    out vec3 Color;
-
-    void main()
-    {
-        Color = color;
-        gl_Position = vec4(position, 0.0, 1.0);
-    }
-)glsl";
-
-const GLchar *fragmentSource = R"glsl(
-    #version 130
-    in vec3 Color;
-
-    out vec4 outColor;
-
-    void main()
-    {
-        outColor = vec4(Color, 1.0);
-    }
-)glsl";
 
 // Function to listen and handle keypress
 void processInput(GLFWwindow *window);
@@ -51,6 +26,9 @@ int main(void)
     /* Initialize the library */
     if (!glfwInit())
         return -1;
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     /* Create a windowed mode window and its OpenGL context */
     GLFWwindow *window;
@@ -81,31 +59,20 @@ int main(void)
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    GLuint vertexShader = createShader("vertex", GL_VERTEX_SHADER, vertexSource);
-    GLuint fragmentShader = createShader("fragment", GL_FRAGMENT_SHADER, fragmentSource);
+    Shader shader("vertex.vs", "fragment.fs");
+    shader.use();
 
-    // Set up shader program
-    GLuint shaderProgram = glCreateProgram();
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE,
+                          8 * sizeof(float), 0);
 
-    // Bind fragment shader buffer
-    glBindFragDataLocation(shaderProgram, 0, "outColor");
-    glLinkProgram(shaderProgram);
-    glUseProgram(shaderProgram);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE,
+                          8 * sizeof(float), (void *)(3 * sizeof(float)));
 
-    glDeleteShader(fragmentShader);
-    glDeleteShader(vertexShader);
-
-    GLint posAttrib = glGetAttribLocation(shaderProgram, "position");
-    glEnableVertexAttribArray(posAttrib);
-    glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE,
-                          5 * sizeof(float), 0);
-
-    GLint colAttrib = glGetAttribLocation(shaderProgram, "color");
-    glEnableVertexAttribArray(colAttrib);
-    glVertexAttribPointer(colAttrib, 3, GL_FLOAT, GL_FALSE,
-                          5 * sizeof(float), (void *)(2 * sizeof(float)));
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE,
+                          8 * sizeof(float), (void *)(5 * sizeof(float)));
 
     // Set viewport
     glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -119,7 +86,7 @@ int main(void)
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        glUseProgram(shaderProgram);
+        shader.use();
         glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLES, 0, 3);
 
@@ -130,7 +97,7 @@ int main(void)
         glfwPollEvents();
     }
 
-    glDeleteProgram(shaderProgram);
+    glDeleteProgram(shader.ID);
     glDeleteBuffers(1, &VBO);
     glDeleteVertexArrays(1, &VAO);
 
