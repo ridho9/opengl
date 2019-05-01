@@ -11,7 +11,8 @@
 
 #include "shader.h"
 #include "const.h"
-#include "vertices.h"
+// #include "vertices.h"
+#include "car.h"
 
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
@@ -30,6 +31,7 @@ glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
 float ambientStrength = 0.9;
+float scale = 0.1;
 
 int main(void)
 {
@@ -84,7 +86,7 @@ int main(void)
     // Set up vertex attrib array
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE,
-                          5 * sizeof(float), 0);
+                          6 * sizeof(float), 0);
 
     // glEnableVertexAttribArray(1);
     // glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE,
@@ -92,7 +94,11 @@ int main(void)
 
     glEnableVertexAttribArray(2);
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE,
-                          5 * sizeof(float), (void *)(3 * sizeof(float)));
+                          6 * sizeof(float), (void *)(3 * sizeof(float)));
+
+    glEnableVertexAttribArray(3);
+    glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE,
+                          1 * sizeof(float), (void *)(5 * sizeof(float)));
 
     // Set up textures
     unsigned int texture;
@@ -118,10 +124,6 @@ int main(void)
     // set transform
     shader.use();
 
-    // model, set object scale pos rot here
-    glm::mat4 model = glm::mat4(1.0f);
-    shader.setMat4("model", model);
-
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
     {
@@ -133,13 +135,18 @@ int main(void)
 
         shader.use();
 
+        // model, set object scale pos rot here
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::scale(model, glm::vec3(scale, scale, scale));
+        shader.setMat4("model", model);
+
         // view, set camera pos here
         glm::mat4 view;
         view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
         shader.setMat4("view", view);
 
         // projection, set camera projection here
-        glm::mat4 projection = glm::perspective(glm::radians(zoom), 1.0f * WINDOW_WIDTH / WINDOW_HEIGHT, 0.1f, 100.0f);
+        glm::mat4 projection = glm::perspective(glm::radians(zoom), 1.0f * WINDOW_WIDTH / WINDOW_HEIGHT, 0.1f, 1000.0f);
         shader.setMat4("projection", projection);
 
         shader.setFloat("ambientStrength", ambientStrength);
@@ -149,7 +156,11 @@ int main(void)
 
         // render
         glBindVertexArray(VAO);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+
+        for (int i = 0; i < 2; i++)
+        {
+            glDrawArrays(GL_TRIANGLE_STRIP, 4 * i, 4);
+        }
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);
@@ -169,7 +180,7 @@ void processInput(GLFWwindow *window)
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, 1);
 
-    float cameraSpeed = 0.05f; // adjust accordingly
+    float cameraSpeed = 0.1; // adjust accordingly
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         cameraPos += cameraSpeed * cameraFront;
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
@@ -178,10 +189,13 @@ void processInput(GLFWwindow *window)
         cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
-    if (glfwGetKey(window, GLFW_KEY_MINUS))
-        ambientStrength -= 0.05;
-    if (glfwGetKey(window, GLFW_KEY_EQUAL))
-        ambientStrength += 0.05;
+    if (glfwGetKey(window, GLFW_KEY_MINUS) == GLFW_PRESS)
+    {
+        scale -= 0.1;
+        printf("%f\n", scale);
+    }
+    if (glfwGetKey(window, GLFW_KEY_EQUAL) == GLFW_PRESS)
+        scale += 0.05;
 }
 
 void scroll_callback(GLFWwindow *window, double xoffset, double yoffset)
