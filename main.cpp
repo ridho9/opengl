@@ -24,6 +24,7 @@ float yaw = -90, pitch = 0;
 void processInput(GLFWwindow *window);
 void scroll_callback(GLFWwindow *window, double xoffset, double yoffset);
 void mouse_callback(GLFWwindow *window, double xpos, double ypos);
+void drawWheel(Shader &shader, glm::mat4 wheelOffset);
 
 float zoom = 45.0f;
 glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 5.0f);
@@ -69,6 +70,7 @@ int main(void)
 
     glEnable(GL_DEPTH_TEST);
 
+    // == CAR BODY ==
     // Create shader program
     Shader shader("vertex.vs", "fragment.fs");
 
@@ -88,10 +90,6 @@ int main(void)
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE,
                           6 * sizeof(float), 0);
 
-    // glEnableVertexAttribArray(1);
-    // glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE,
-    //                       8 * sizeof(float), (void *)(3 * sizeof(float)));
-
     glEnableVertexAttribArray(2);
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE,
                           6 * sizeof(float), (void *)(3 * sizeof(float)));
@@ -110,7 +108,7 @@ int main(void)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     int width, height, nrChannels;
     stbi_set_flip_vertically_on_load(true);
-    unsigned char *data = stbi_load("texture.png", &width, &height, &nrChannels, 0);
+    unsigned char *data = stbi_load("b8ojml.jpg", &width, &height, &nrChannels, 0);
     if (data)
     {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
@@ -124,6 +122,8 @@ int main(void)
 
     // set transform
     shader.use();
+
+    // == CAR BODY ENDS ==
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
@@ -139,7 +139,7 @@ int main(void)
         // model, set object scale pos rot here
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::scale(model, glm::vec3(scale, scale, scale));
-        model = glm::translate(model, glm::vec3(-30.0f, -40.0f, 0.0f));
+        model = glm::translate(model, glm::vec3(-40.0f, -40.0f, 0.0f));
         shader.setMat4("model", model);
 
         // view, set camera pos here
@@ -159,10 +159,20 @@ int main(void)
         // render
         glBindVertexArray(VAO);
 
+        // draw body
         for (int i = 0; i < 11; i++)
         {
             glDrawArrays(GL_TRIANGLE_STRIP, 4 * i, 4);
         }
+
+        model = glm::translate(model, glm::vec3(40.0f, -20.0f, -50.0f));
+        drawWheel(shader, model);
+        model = glm::translate(model, glm::vec3(0.0f, 0.0f, -70.0f));
+        drawWheel(shader, model);
+        model = glm::translate(model, glm::vec3(-50.0f, 0.0f, 0.0f));
+        drawWheel(shader, model);
+        model = glm::translate(model, glm::vec3(0.0f, 0.0f, 70.0f));
+        drawWheel(shader, model);
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);
@@ -174,6 +184,32 @@ int main(void)
 
     glfwTerminate();
     return 0;
+}
+
+void drawWheel(Shader &shader, glm::mat4 wheelOffset)
+{
+    // draw wheel
+    glm::mat4 model;
+    model = wheelOffset;
+    shader.setMat4("model", model);
+    glDrawArrays(GL_TRIANGLE_STRIP, 4 * 11, 4);
+    model = glm::translate(wheelOffset, glm::vec3(10.0f, 0.0f, 0.0f));
+    shader.setMat4("model", model);
+    glDrawArrays(GL_TRIANGLE_STRIP, 4 * 11, 4);
+    //tb
+    model = glm::translate(wheelOffset, glm::vec3(0.0f, 0.0f, 0.0f));
+    shader.setMat4("model", model);
+    glDrawArrays(GL_TRIANGLE_STRIP, 4 * 12, 4);
+    model = glm::translate(wheelOffset, glm::vec3(0.0f, -40.0f, 0.0f));
+    shader.setMat4("model", model);
+    glDrawArrays(GL_TRIANGLE_STRIP, 4 * 12, 4);
+    //fb
+    model = glm::translate(wheelOffset, glm::vec3(0.0f, 0.0f, 0.0f));
+    shader.setMat4("model", model);
+    glDrawArrays(GL_TRIANGLE_STRIP, 4 * 13, 4);
+    model = glm::translate(wheelOffset, glm::vec3(0.0f, 0.0f, -40.0f));
+    shader.setMat4("model", model);
+    glDrawArrays(GL_TRIANGLE_STRIP, 4 * 13, 4);
 }
 
 void processInput(GLFWwindow *window)
