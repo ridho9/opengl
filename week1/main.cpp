@@ -49,18 +49,14 @@ int main(void)
         // set draw color
         glColor3f(0.0f, 1.0f, 0.0f);
 
-        glBegin(GL_TRIANGLES); //starts drawing of points
-        glVertex2f(0.0, 0.6f); // x, y, z
-        glVertex2f(0.5, 0.1f);
-        glVertex2f(0.3, -0.5f);
-        glEnd(); //end drawing of points
-
-        glColor3f(1.0f, 1.0f, 0.0f);
-        glBegin(GL_TRIANGLES); //starts drawing of points
-        glVertex2f(-0.3, -0.5f);
-        glVertex2f(-0.5, 0.1f);
-        glVertex2f(-0.8, 0.1f);
-        glEnd(); //end drawing of points
+        glBegin(GL_POLYGON);
+        glColor3d(0.0f, 1.0f, 0.0f);
+        glVertex2f(-0.5f, 0.0f);
+        glVertex2f(0.0f, 0.5f);
+        glVertex2f(0.5f, 0.0f);
+        glVertex2f(0.3f, -0.5f);
+        glVertex2f(-0.3f, -0.5f);
+        glEnd();
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);
