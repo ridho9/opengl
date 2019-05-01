@@ -21,5 +21,5 @@ void main()
     Color = vec3(1.0, 1.0, 1.0);
     TexCoord = texCoord;
     Normal = normal;
-    FragPos = vec3(gl_Position);
+    FragPos = vec3(model * vec4(position, 1.0));
 }

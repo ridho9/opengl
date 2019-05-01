@@ -31,9 +31,9 @@ glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 5.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
-glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
+glm::vec3 lightPos(50.2f, 50.0f, 50.0f);
 
-float ambientStrength = 0.6;
+float ambientStrength = 0.4;
 float scale = 0.04;
 
 int main(void)
@@ -98,7 +98,7 @@ int main(void)
 
     glEnableVertexAttribArray(3);
     glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE,
-                          1 * sizeof(float), (void *)(5 * sizeof(float)));
+                          6 * sizeof(float), (void *)(5 * sizeof(float)));
 
     // Set up textures
     unsigned int texture;

@@ -13,6 +13,7 @@ uniform vec3 lightPos;
 
 void main()
 {
+    vec3 lightDir = normalize(lightPos - FragPos);  
     vec3 normalVec;
     if(Normal < 1) {
         normalVec = vec3(1.0, 0, 0);
@@ -27,13 +28,16 @@ void main()
     } else {
         normalVec = vec3(0.0, 0.0, -1.0);
     }
-    vec3 lightDir = normalize(lightPos - FragPos);  
     float diff = max(dot(normalVec, lightDir), 0.0);
-    vec3 diffuse = diff * vec3(0.9, 0.9, 0.9);
+    vec3 diffuse = diff * vec3(1);
+
+    vec3 ambient = ambientStrength * vec3(1, 1, 1);
 
     // outColor = vec4(Color, 1.0);
     vec2 convTexCoord = TexCoord;
     convTexCoord.x = TexCoord.x / 240;
     convTexCoord.y = 1 - (TexCoord.y / 340);
-    outColor = texture(ourTexture, convTexCoord) * vec4(Color * ambientStrength, 1.0);
+
+    vec3 result = (ambient +  diffuse) * vec3(texture(ourTexture, convTexCoord));
+    outColor = vec4(result, 1);
 }
