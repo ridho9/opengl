@@ -31,7 +31,9 @@ glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 5.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
-float ambientStrength = 0.9;
+glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
+
+float ambientStrength = 0.6;
 float scale = 0.04;
 
 int main(void)
@@ -135,6 +137,8 @@ int main(void)
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         shader.use();
+
+        shader.setVec3("lightPos", lightPos);
 
         // model, set object scale pos rot here
         glm::mat4 model = glm::mat4(1.0f);
