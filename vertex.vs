@@ -15,6 +15,6 @@ void main()
 {
     mat4 mvp = projection * view * model;
     gl_Position = mvp * vec4(position, 1.0);
-    Color = vec3(0.0, 0.0, 0.0);
+    Color = vec3(1.0, 1.0, 1.0);
     TexCoord = texCoord;
 }

@@ -14,6 +14,8 @@ class Shader
 {
   public:
     unsigned int ID;
+
+    Shader() {}
     Shader(const char *vertexPath, const char *fragmentPath)
     {
         std::string vertexCode, fragmentCode;
@@ -85,6 +87,11 @@ class Shader
         // delete the shaders as they're linked into our program now and no longer necessery
         glDeleteShader(vertex);
         glDeleteShader(fragment);
+    }
+
+    ~Shader()
+    {
+        glDeleteProgram(ID);
     }
 
     void use()
