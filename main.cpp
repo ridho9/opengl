@@ -71,6 +71,15 @@ int main(void)
     Car car;
     ParticleRenderer particleRenderer;
     SmokeParticle particles[100];
+    SmokeParticle rainParticles[5000];
+
+    for(int i = 0; i < 5000; i++) {
+        float pos_x = (float) (rand() % 500);
+        float pos_y = (float) (rand() % 500);
+        float pos_z = (float) (rand() % 500);
+        rainParticles[i].pos = glm::vec3(pos_x, pos_y, pos_z);
+        rainParticles[i].speed = glm::vec3(0.0f, -5.0f, 0.0f);
+    }
 
     curTime = glfwGetTime();
 
@@ -86,6 +95,10 @@ int main(void)
         for (int i = 0; i < 100; i++)
         {
             particles[i].update(deltaTime);
+        }
+
+        for(int i = 0; i < 5000; i++) {
+            rainParticles[i].rain(deltaTime);
         }
 
         // Background color
@@ -107,6 +120,10 @@ int main(void)
         for (int i = 0; i < 100; i++)
         {
             particles[i].draw(particleRenderer, model, view, projection);
+        }
+
+        for(int i = 0; i < 5000; i++) {
+            rainParticles[i].draw(particleRenderer, model, view, projection);
         }
 
         /* Swap front and back buffers */

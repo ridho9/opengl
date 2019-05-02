@@ -47,6 +47,23 @@ struct SmokeParticle
     glm::vec3 speed = glm::vec3(0.0f);
     float rot = 0, life = 0;
 
+    void rain(double deltaTime)
+    {
+        pos += speed;
+
+        life -= deltaTime;
+        if (life <= 0)
+        {
+            rot = (float)(rand() % 360);
+
+            life = (float)((rand() % 50) + 10) / 10;
+            float pos_x = (float) (rand() % 500);
+            float pos_y = (float) (rand() % 500);
+            float pos_z = (float) (rand() % 500);
+            pos = glm::vec3(pos_x, pos_y, pos_z);
+        }
+    }
+
     void update(double deltaTime)
     {
         int erratic = 1.5;
