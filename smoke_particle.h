@@ -45,8 +45,7 @@ struct SmokeParticle
 {
     glm::vec3 pos = glm::vec3(0.0f);
     glm::vec3 speed = glm::vec3(0.0f);
-    float life = 0;
-    float rot = 0;
+    float rot = 0, life = 0;
 
     void update(double deltaTime)
     {
@@ -59,12 +58,11 @@ struct SmokeParticle
             speed = glm::vec3(
                 (float)(rand() % 10 - 5) * deltaTime * erratic,
                 10.0f * deltaTime,
-                (float)(rand() % 10 - 5) * deltaTime * erratic);
+                -(float)(rand() % 10) * deltaTime * erratic);
 
             rot = (float)(rand() % 360);
 
-            life = (float)((rand() % 40) + 5) / 10;
-            printf("%f\n", life);
+            life = (float)((rand() % 50) + 10) / 10;
             pos = glm::vec3(0.0f);
         }
     }
@@ -72,16 +70,15 @@ struct SmokeParticle
     void draw(ParticleRenderer &renderer, glm::mat4 model, glm::mat4 view, glm::mat4 projection)
     {
         renderer.shader.use();
-        renderer.shader.setVec3("particleColor", glm::vec3(0.9f, 0.9f, 0.9f));
 
-        model = glm::translate(model, glm::vec3(20.0f, 10.0f, -145.0f));
+        model = glm::translate(model, glm::vec3(20.0f, 5.0f, -142.0f));
         model = glm::translate(model, pos);
         model = glm::rotate(model, glm::radians(rot), glm::vec3(0.0, 1.0, 0.0));
         renderer.shader.setMat4("model", model);
         renderer.shader.setMat4("view", view);
         renderer.shader.setMat4("projection", projection);
 
-        renderer.shader.setVec3("particleColor", glm::vec3(0.3f));
+        renderer.shader.setVec3("particleColor", glm::vec3(0.5f));
         renderer.shader.setFloat("alpha", life / 4.5);
 
         glBindVertexArray(renderer.VAO);
