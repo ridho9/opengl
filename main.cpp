@@ -82,6 +82,8 @@ int main(void)
     }
 
     curTime = glfwGetTime();
+    glm::vec3 black = glm::vec3(0.0f);
+    glm::vec3 blue = glm::vec3(0.0f, 0.0f, 1.0f);
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
@@ -119,11 +121,11 @@ int main(void)
         car.draw(model, view, projection);
         for (int i = 0; i < 100; i++)
         {
-            particles[i].draw(particleRenderer, model, view, projection);
+            particles[i].draw(particleRenderer, model, view, projection, black);
         }
 
         for(int i = 0; i < 5000; i++) {
-            rainParticles[i].draw(particleRenderer, model, view, projection);
+            rainParticles[i].draw(particleRenderer, model, view, projection, blue);
         }
 
         /* Swap front and back buffers */

@@ -84,7 +84,7 @@ struct SmokeParticle
         }
     }
 
-    void draw(ParticleRenderer &renderer, glm::mat4 model, glm::mat4 view, glm::mat4 projection)
+    void draw(ParticleRenderer &renderer, glm::mat4 model, glm::mat4 view, glm::mat4 projection, glm::vec3 color)
     {
         renderer.shader.use();
 
@@ -95,7 +95,7 @@ struct SmokeParticle
         renderer.shader.setMat4("view", view);
         renderer.shader.setMat4("projection", projection);
 
-        renderer.shader.setVec3("particleColor", glm::vec3(0.5f));
+        renderer.shader.setVec3("particleColor", color);
         renderer.shader.setFloat("alpha", life / 4.5);
 
         glBindVertexArray(renderer.VAO);
