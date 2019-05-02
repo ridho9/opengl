@@ -3,7 +3,7 @@ GLAD_C=$(GLAD_DIR)/src/glad.c
 CXXFLAGS=-std=c++11 -lglfw -lGL -ldl -I$(GLAD_DIR)/include
 # CXXFLAGS=-std=c++11 -lglfw -lGL -ldl -lGLEW
 
-main.out: main.cpp vertices.h shader.h car.h
+main.out: main.cpp vertices.h shader.h car.h smoke_particle.h
 	$(CXX) $(CXXFLAGS) -o $@ $(GLAD_C) main.cpp
 
 # main.out: main.o

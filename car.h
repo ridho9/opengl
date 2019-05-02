@@ -55,7 +55,7 @@ class Car
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         int width, height, nrChannels;
         stbi_set_flip_vertically_on_load(true);
-        unsigned char *data = stbi_load("b8ojml.jpg", &width, &height, &nrChannels, 0);
+        unsigned char *data = stbi_load("car.jpg", &width, &height, &nrChannels, 0);
         if (data)
         {
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
@@ -72,23 +72,15 @@ class Car
         shader.setVec3("lightPos", lightPos);
     }
 
-    void draw()
+    void draw(glm::mat4 model, glm::mat4 view, glm::mat4 projection)
     {
         shader.use();
 
-        // model, set object scale pos rot here
-        glm::mat4 model = glm::mat4(1.0f);
-        model = glm::scale(model, glm::vec3(scale, scale, scale));
-        model = glm::translate(model, glm::vec3(-40.0f, -40.0f, 0.0f));
         shader.setMat4("model", model);
 
         // view, set camera pos here
-        glm::mat4 view;
-        view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
         shader.setMat4("view", view);
 
-        // projection, set camera projection here
-        glm::mat4 projection = glm::perspective(glm::radians(zoom), 1.0f * WINDOW_WIDTH / WINDOW_HEIGHT, 0.1f, 1000.0f);
         shader.setMat4("projection", projection);
 
         shader.setFloat("ambientStrength", ambientStrength);

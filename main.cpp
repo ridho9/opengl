@@ -2,6 +2,8 @@
 #include <GLFW/glfw3.h>
 #include <stdio.h>
 
+#include <stdlib.h>
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -10,6 +12,8 @@
 #include "const.h"
 #include "vertices.h"
 #include "car.h"
+
+#include "smoke_particle.h"
 
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
@@ -22,8 +26,11 @@ void processInput(GLFWwindow *window);
 void scroll_callback(GLFWwindow *window, double xoffset, double yoffset);
 void mouse_callback(GLFWwindow *window, double xpos, double ypos);
 
+double prevTime, curTime, deltaTime;
+
 int main(void)
 {
+    srand(time(NULL));
     /* Initialize the library */
     if (!glfwInit())
         return -1;
@@ -57,22 +64,50 @@ int main(void)
     glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 
     glEnable(GL_DEPTH_TEST);
+    // Enable blending
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    // == CAR BODY ==
-    // Create shader program
     Car car;
-    // == CAR BODY ENDS ==
+    ParticleRenderer particleRenderer;
+    SmokeParticle particles[100];
+
+    curTime = glfwGetTime();
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
     {
         processInput(window);
 
+        prevTime = curTime;
+        curTime = glfwGetTime();
+        deltaTime = curTime - prevTime;
+
+        for (int i = 0; i < 100; i++)
+        {
+            particles[i].update(deltaTime);
+        }
+
         // Background color
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        car.draw();
+        // model, set object scale pos rot here
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::scale(model, glm::vec3(scale, scale, scale));
+        model = glm::translate(model, glm::vec3(-40.0f, -40.0f, 0.0f));
+
+        glm::mat4 view;
+        view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+
+        // projection, set camera projection here
+        glm::mat4 projection = glm::perspective(glm::radians(zoom), 1.0f * WINDOW_WIDTH / WINDOW_HEIGHT, 0.1f, 1000.0f);
+
+        car.draw(model, view, projection);
+        for (int i = 0; i < 100; i++)
+        {
+            particles[i].draw(particleRenderer, model, view, projection);
+        }
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);
